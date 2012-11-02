@@ -1,4 +1,4 @@
 webapps-user-lib
 ================
 
-User management library for CWA applications
+Simple user management library for CWA applications
