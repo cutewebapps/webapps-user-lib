@@ -121,7 +121,7 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
 
                     $pathsTpl = array();
                     foreach( $arrThemes as $strTheme ) {
-                        $pathsTpl[] = WC_APPLICATION_DIR . '/theme/' . $strTheme
+                        $pathsTpl[] = CWA_APPLICATION_DIR . '/theme/' . $strTheme
                             .'/'.$arrAreaProperties['section'].'/auth.'.$view->getExtension();
                     }
 
