@@ -24,7 +24,6 @@ class User_Account_Table extends DBx_Table
     {
         return 'ucac_password';
     }
-
     /**
      * @param string $strName
      * @return User_Account
@@ -36,10 +35,8 @@ class User_Account_Table extends DBx_Table
     }
 }
 
-
 class User_Account_List extends DBx_Table_Rowset
 {
-
 }
 
 class User_Account_Form_Edit extends App_Form_Edit
@@ -61,14 +58,12 @@ class User_Account_Form_Filter extends App_Form_Filter
     }
 }
 
-
 class User_Account extends DBx_Table_Row
 {
     const ACTIVE = 1;
     const INACTIVE = 2;
-	
-    protected $_objRoles = null;
 
+    protected $_objRoles = null;
     public static function getClassName() { return 'User_Account'; }
     public static function TableClass() { return self::getClassName().'_Table'; }
     public static function Table() { $strClass = self::TableClass();  return new $strClass; }
@@ -76,7 +71,9 @@ class User_Account extends DBx_Table_Row
     public static function FormClass( $name ) { return self::getClassName().'_Form_'.$name; }
     public static function Form( $name ) { $strClass = self::getClassName().'_Form_'.$name; return new $strClass; }
 
-
+    /**
+     * @return void
+     */
     public function cleanCache()
     {
         $this->_objRoles = null;
@@ -102,8 +99,7 @@ class User_Account extends DBx_Table_Row
         $this->ucac_hash = md5($this->ucac_password);
         return parent::save( $bRefresh );
     }
-	
-	/**
+    /**
      * Overriden method delete, for deprecate full delete of object from db.
      * @return void
      */
@@ -119,7 +115,6 @@ class User_Account extends DBx_Table_Row
     {
         return $this->ucac_login;
     }
-
     /**
      * @return string
      */
@@ -141,7 +136,6 @@ class User_Account extends DBx_Table_Row
     {
         return date('Y-m-d H:i:s', strtotime( $this->ucac_date_added ) );
     }
-
     /**
      * @return int
      */
@@ -149,7 +143,6 @@ class User_Account extends DBx_Table_Row
     {
         return $this->ucac_status;
     }
-
     /**
      * @return boolean
      */
@@ -188,7 +181,6 @@ class User_Account extends DBx_Table_Row
         }
         return $this->_objRoles ;
     }
-
     /**
      * returns true if user has any of given roles...
      * @param string $role
@@ -211,9 +203,9 @@ class User_Account extends DBx_Table_Row
                     return true;
             }
         }
+        throw new App_Exception( 'Invalid user role: '.$role );
         return false;
     }
-
     /**
      * @param string $strRole
      * @return void
@@ -231,7 +223,6 @@ class User_Account extends DBx_Table_Row
             $this->cleanCache();
         }
     }
-
     /**
      * @param string $strRole
      * @return void
@@ -248,5 +239,28 @@ class User_Account extends DBx_Table_Row
             $objUserRole->delete();
             $this->cleanCache();
         }
+    }
+    /**
+     * @return array of int resources
+     */
+    public function getAccessList()
+    {
+        // TODO: get access list of the user, merging all of his roles
+        $arrList = array();
+        foreach ( $this->getRoles() as $objRole ) {
+            
+        }
+        return $arrList;
+    }
+    /**
+     * Check whether user has an acccess to resource by ID
+     * @return boolean
+     */
+    public function canAccess( $resource )
+    {
+        // if resource in numeric, get it by ID
+        // if resource is string
+        // TODO: get access list for roles
+        return true;
     }
 }

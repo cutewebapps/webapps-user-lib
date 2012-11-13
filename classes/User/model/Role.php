@@ -30,10 +30,24 @@ class User_Role_List extends DBx_Table_Rowset
 
 class User_Role_Form_Filter extends App_Form_Filter
 {
+   public function createElements()
+   {    
+        $this->allowFiltering( array( 
+            'ucr_name',
+            'ucr_date_added_from', 
+            'ucr_date_added_to'
+        ) );    
+   }
 }
 
 class User_Role_Form_Edit extends App_Form_Edit
 {
+    public function createElements()
+    {
+        $this->allowEditing( array( 
+            'ucr_name'
+        ) );
+    }
 }
 
 /**
@@ -79,7 +93,17 @@ class User_Role extends DBx_Table_Row
     {
         if ( !isset( $this->ucr_date_added ) )
             $this->ucr_date_added = date('Y-m-d H:i:s');
-        
+    }
+    
+    /**
+     * 
+     * @return User_AcccessList
+     */
+    public function getAccessList()
+    {
+        $select = User_AccessList::Table()->select()
+                ->where( 'ucal_role_id = ?', $this->getId() );
+        return User_AccessList::Table()->fetchAll($select);
     }
 
     /**

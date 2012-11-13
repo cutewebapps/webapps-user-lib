@@ -18,8 +18,8 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                 'require_login' => 1,
             ),
         );
-        if ( is_object( App_Application::getInstance()->getConfig()->user_area ))
-            $arrUserAreas = App_Application::getInstance()->getConfig()->user_area->toArray();
+        if ( is_object( App_Application::getInstance()->getConfig()->user->area ))
+            $arrUserAreas = App_Application::getInstance()->getConfig()->user->area->toArray();
 
         // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

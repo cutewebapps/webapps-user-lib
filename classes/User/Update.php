@@ -34,7 +34,10 @@ class User_Update extends App_Update
         );
     }
 
-
+    /**
+     * @param array $arrProperties
+     * @return User_Account
+     */
     protected function _addDefaultAccount( $arrProperties )
     {
         $strLogin = $arrProperties['login'];
@@ -61,10 +64,13 @@ class User_Update extends App_Update
         return $objAccount;
     }
 
+    /**
+     * @return void
+     */
     protected function _addDefaultRoles()
     {
         $tblRole = User_Role::Table();
-        $cfgDefaultRoles = App_Application::getInstance()->getConfig()->user_role;
+        $cfgDefaultRoles = App_Application::getInstance()->getConfig()->user->role;
         if ( is_object($cfgDefaultRoles) ) {
             foreach ($cfgDefaultRoles as $strRole ) {
                 Sys_Io::out( 'adding user role: '.$strRole );
@@ -82,9 +88,12 @@ class User_Update extends App_Update
         }
     }
 
+    /**
+     * @return void
+     */
     protected function _addDefaultAccounts()
     {
-        $cfgDefaultAccounts = App_Application::getInstance()->getConfig()->user_list;
+        $cfgDefaultAccounts = App_Application::getInstance()->getConfig()->user->list;
 
         if ( is_object($cfgDefaultAccounts) ) {
             $cfgDefaultAccount = null;
@@ -112,7 +121,9 @@ class User_Update extends App_Update
         }
     }
 
-    
+    /**
+     * @return void
+     */
     protected function _install()
     {
         Sys_Io::out( 'Installing Users Management' );
