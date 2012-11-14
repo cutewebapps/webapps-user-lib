@@ -2,7 +2,7 @@
 
 class User_Update extends App_Update
 {
-    const VERSION = '0.1.1';
+    const VERSION = '0.1.2';
     public static function getClassName() { return 'User_Update'; }
     public static function TableClass() { return self::getClassName().'_Table'; }
     public static function Table() { $strClass = self::TableClass();  return new $strClass; }
@@ -10,15 +10,15 @@ class User_Update extends App_Update
 
     public function update()
     {
-        if ( $this->isVersionBelow( '0.0.1' ) ) {
+        if ( $this->isVersionBelow( '0.1.2' ) ) {
             $this->_install();
-        }
-        if ( $this->isVersionBelow( '0.1.0' ) ) {
             $tblUsers = User_Account::Table();
             if ( !$tblUsers ->hasColumn( 'ucac_icon' ) ) {
                 $tblUsers ->addColumn(  'ucac_icon','VARCHAR(255) DEFAULT \'\' NOT NULL');
             }
         }
+        $this->_addDefaultRoles();
+        $this->_addDefaultAccounts();
         $this->save( self::VERSION );
     }
     /**
@@ -27,6 +27,7 @@ class User_Update extends App_Update
     public static function getTables()
     {
         return array(
+            User_Option::TableName(),
             User_Account::TableName(),
             User_Role::TableName(),
             User_UserRole::TableName(),
@@ -73,10 +74,9 @@ class User_Update extends App_Update
         $cfgDefaultRoles = App_Application::getInstance()->getConfig()->user->role;
         if ( is_object($cfgDefaultRoles) ) {
             foreach ($cfgDefaultRoles as $strRole ) {
-                Sys_Io::out( 'adding user role: '.$strRole );
-
                 $objRole = $tblRole->findByName( $strRole );
                 if ( !is_object( $objRole )) {
+                    Sys_Io::out( 'adding user role: '.$strRole );
                     $objRole = $tblRole->createRow();
                     $objRole->ucr_name = $strRole;
                     $objRole->ucr_date_added = date('Y-m-d H:i:s');
@@ -129,7 +129,7 @@ class User_Update extends App_Update
         Sys_Io::out( 'Installing Users Management' );
 
         if (!$this->getDbAdapterRead()->hasTable('uc_account')) {
-            
+            Sys_Io::out( 'User Accounts created' );
             $this->getDbAdapterWrite()->addTableSql('uc_account', "
                 `ucac_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `ucac_login`    VARCHAR(255) NOT NULL DEFAULT '',
@@ -151,6 +151,7 @@ class User_Update extends App_Update
                 ");
             
             if (!$this->getDbAdapterRead()->hasTable('uc_role')) {
+                Sys_Io::out( 'User Roles created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_role', "
                 `ucr_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `ucr_name` VARCHAR(255) NOT NULL DEFAULT '',
@@ -160,6 +161,7 @@ class User_Update extends App_Update
             }
             
             if (!$this->getDbAdapterRead()->hasTable('uc_user_role')) {
+                Sys_Io::out( 'User Account Roles created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_user_role', "
                 `ucur_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `ucur_user_id` INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -172,6 +174,7 @@ class User_Update extends App_Update
             }
             
             if (!$this->getDbAdapterRead()->hasTable('uc_access_list')) {
+                Sys_Io::out( 'User Access Lists created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_access_list', "
                 `ucal_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `ucal_role_id`      INT(10) UNSIGNED NOT NULL DEFAULT '0',
@@ -182,9 +185,22 @@ class User_Update extends App_Update
                 KEY `ucal_resource_id` (`ucal_resource_id`)
                 ");
             }
+            
+            if (!$this->getDbAdapterRead()->hasTable('uc_option')) {
+                Sys_Io::out( 'User options created' );
+                $this->getDbAdapterWrite()->addTableSql('uc_option', "
+                    
+                `uco_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `uco_user_id`    INT(10) UNSIGNED NOT NULL DEFAULT '0',
+                `uco_key`        VARCHAR(255) NOT NULL DEFAULT '',
+                `uco_value`      VARCHAR(255) NOT NULL DEFAULT '',
+                
+                PRIMARY KEY (`uco_id`),
+                KEY `uco_user_id` (`uco_user_id`),
+                KEY `uco_key` (`uco_key`)
+                ");
+            }
         }
-        $this->_addDefaultRoles();
-        $this->_addDefaultAccounts();
     }
 
 }

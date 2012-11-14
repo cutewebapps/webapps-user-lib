@@ -105,8 +105,18 @@ class User_Account extends DBx_Table_Row
      */
     public function delete()
     {
-        $this->ucac_status = User_Account::INACTIVE;
-        $this->save();
+        $objConfig = App_Application::getInstance()->getConfig()->user;
+        
+        // config-based detection of what to do on deleting user
+        // dometime we need to prevent deletion
+        if ( $objConfig->on_delete ) {
+            call_user_func_array( $objConfig->on_delete, array( 'object' => $this ) );
+        } else if ( $objConfig->never_delete ) {
+            $this->ucac_status = User_Account::INACTIVE;
+            $this->save();        
+        } else {
+            parent::delete();
+        }
     } 
     /**
      * @return string
@@ -203,7 +213,6 @@ class User_Account extends DBx_Table_Row
                     return true;
             }
         }
-        throw new App_Exception( 'Invalid user role: '.$role );
         return false;
     }
     /**
@@ -240,17 +249,25 @@ class User_Account extends DBx_Table_Row
             $this->cleanCache();
         }
     }
+    protected $_arrAccessList = null;
     /**
+     * Get IDs of resources
      * @return array of int resources
      */
     public function getAccessList()
     {
-        // TODO: get access list of the user, merging all of his roles
-        $arrList = array();
-        foreach ( $this->getRoles() as $objRole ) {
-            
+        if ( $this->_arrAccessList == null ) {
+            $this->_arrAccessList = array();
+            /* @var $objRole User_Role */
+            foreach ( $this->getRoles() as $objRole ) {
+                $lstAccessList = $objRole->getAccessList();
+                /* @var $objAccessList User_AccessList */
+                foreach ( $lstAccessList as $objAccessList ) {
+                   $this->_arrAccessList[ $objAccessList->getResourceId() ] = $objAccessList->getResourceId();
+                }
+            }
         }
-        return $arrList;
+        return $this->_arrAccessList;
     }
     /**
      * Check whether user has an acccess to resource by ID
@@ -258,9 +275,22 @@ class User_Account extends DBx_Table_Row
      */
     public function canAccess( $resource )
     {
-        // if resource in numeric, get it by ID
-        // if resource is string
-        // TODO: get access list for roles
-        return true;
+        if ( preg_match( '@\d+@', $resource ) ) {
+            return $this->canAccessByResourceId( $resource );
+        }
+        $nResourceId = User_Resource::parseString( $resource ); 
+        if ( ! $nResourceId ) 
+            throw new User_Acl_Exception( "Invalid resource string: ".$resource );
+        
+        return $this->canAccessByResourceId( $nResourceId );
+    }
+    /**
+     * @param integer $nResourceId
+     * @return boolean
+     */
+    public function canAccessByResourceId( $nResourceId )
+    {
+        $arrAccessList = $this->getAccessList();
+        return isset( $arrAccessList[ $nResourceId ] );
     }
 }
