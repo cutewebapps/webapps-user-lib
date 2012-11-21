@@ -28,4 +28,21 @@ class User_Resource
         }
         return $config->$strLastPiece;
     }
+    /**
+     * Getting groups of resources
+     * @return array of string => ( id => string )
+     */
+    public static function getAsArray()
+    {
+        $config = App_Application::getInstance()->getConfig()->user->resource;
+        $arrGroups = array();
+        foreach ( $config as $strKey => $confGroups ) {
+            $arrResources = array();
+            foreach( $confGroups as $strResourceName => $strResourceId ) {
+                $arrResources[ $strResourceId ] = $strResourceName;
+            }
+            $arrGroups[ $strKey ] = $arrResources;
+        }
+        return $arrGroups;
+    }
 }
