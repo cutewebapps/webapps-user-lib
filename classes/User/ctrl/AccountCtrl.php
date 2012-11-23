@@ -26,9 +26,43 @@ class User_AccountCtrl extends App_DbTableCtrl
         //add role if it is provided
         parent::editAction();
         
-        if ( isset( $_POST['role'] ) && $_POST['role'] != '' ) {
-            $strRole = $_POST['role'];
-            $objRole = User_Role::Table()->findByName( $_POST['role'] );
+        if ( $this->_hasParam( 'roles_list' ) ) {
+            $objUser = $this->view->object;
+            
+            // when the list of roles is submitted directly with user form
+            $arrExistingRoles = array();
+            foreach ( $objUser->getRoles() as $objRole ) $arrExistingRoles[ $objRole->getId() ] = $objRole->getId();
+            
+            $arrNewIds = array();
+            $arrIds = explode( ",", $this->_getParam( 'roles_list' ) );
+            foreach ( $arrIds as $nRoleId ) {
+                $nRoleId = trim( $nRoleId );  if ( $nRoleId == '' ) continue; 
+                
+                $arrNewIds [ $nRoleId ] = $nRoleId;
+                if ( !isset( $arrExistingRoles[ $nRoleId ] ) ) {
+                    // need to add a role
+                    $objUserRole = User_UserRole :: Table()->createRow();
+                    $objUserRole->ucur_user_id = $objUser->getId();
+                    $objUserRole->ucur_role_id = $nRoleId;
+                    $objUserRole->save( false );
+                }
+            }
+            
+            // walking through existing roles, delete IDs
+            foreach ( $arrExistingRoles as $nRoleId ) {
+                if ( !isset( $arrNewIds[ $nRoleId ] )) {
+                    // this role has to be deleted
+                    $objUserRole = User_UserRole::Table()->findRole( $objUser->getId(), $nRoleId );
+                    if ( is_object( $objUserRole ) ) $objUserRole->delete();
+                }
+            }
+            
+            $objUser->cleanCache();
+            $this->view->object = $objUser;
+        
+        } else if ( $this->_hasParam( 'role' ) && $this->_getParam('role') != '' ) {
+            $strRole = $this->_getParam( 'role');
+            $objRole = User_Role::Table()->findByName(  $strRole );
 
             if ( !is_object( $objRole ))
                 throw new App_Exception ( 'Invalid User Role' );
@@ -38,7 +72,7 @@ class User_AccountCtrl extends App_DbTableCtrl
                 $objUserRole = User_UserRole :: Table()->createRow();
                 $objUserRole->ucur_user_id = $objUser->getId();
                 $objUserRole->ucur_role_id = $objRole->getId();
-                $objUserRole->save();
+                $objUserRole->save( false );
 
                 $objUser->cleanCache();
             }

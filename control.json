@@ -1,6 +1,6 @@
 {
     "name"    : "webapps-user-lib",
-    "version" : "0.1.4",
+    "version" : "0.1.5",
     "classes" : [ "User" ],
     "deps"    : [ 
         "webapps-user-lib"
