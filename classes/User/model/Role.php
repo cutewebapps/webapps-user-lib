@@ -150,7 +150,12 @@ class User_Role extends DBx_Table_Row
     
     public function isPredefined()
     {
-        // TODO: check configs for prefefined roles, return Administrator - if not found
+        // check configs for prefefined roles, 
+        // return Administrator - if not configured
+        $confUser = App_Application::getInstance()->getConfig()->user;
+        if ( is_object( $confUser ) && $confUser->predefined ) {
+            return in_array( $this->getName(), $confUser->predefined->toArray() );
+        }
         return ( $this->getName() == 'Administrator' );
     }
 

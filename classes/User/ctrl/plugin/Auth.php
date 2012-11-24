@@ -89,9 +89,14 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     $objUser = $tblUser->fetchRow( $selectUser );
                     if ( is_object( $objUser ) ) {
                         if ( $objUser->ucac_status == User_Account::ACTIVE) {
-                            // TODO: check user role
-                            if ( isset($arrAreaProperties['role']) ) {
-                                if( !$objUser->hasRole( $arrAreaProperties['role'] ) ) {
+                            
+                            if ( isset($arrAreaProperties['role_forbidden']) ) {
+                                if( $objUser->hasRole( $arrAreaProperties['role_forbidden'] ) ) {
+                                    header( 'Location: '.$strBaseAreaUrl.'?errcode=3' ); die();
+                                }
+                            }
+                            if ( isset($arrAreaProperties['role_required']) ) {
+                                if( !$objUser->hasRole( $arrAreaProperties['role_required'] ) ) {
                                     header( 'Location: '.$strBaseAreaUrl.'?errcode=3' ); die();
                                 }
                             }
