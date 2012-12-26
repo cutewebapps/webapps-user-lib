@@ -96,6 +96,11 @@ class User_Account extends DBx_Table_Row
      */
     public function save( $bRefresh = true )
     {
+        if ( $this->ucac_password == '' && $this->getOldData( 'ucac_password' ) != '' )
+        {
+            $this->ucac_password = $this->getOldData( 'ucac_password' );
+        }
+            
         $this->ucac_hash = md5($this->ucac_password);
         return parent::save( $bRefresh );
     }
