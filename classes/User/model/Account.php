@@ -295,6 +295,9 @@ class User_Account extends DBx_Table_Row
      */
     public function canAccessByResourceId( $nResourceId )
     {
+        if ( $nResourceId instanceof Sys_Config )
+            $nResourceId = $nResourceId->id;
+            
         $arrAccessList = $this->getAccessList();
         return isset( $arrAccessList[ $nResourceId ] );
     }
