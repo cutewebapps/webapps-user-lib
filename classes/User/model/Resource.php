@@ -39,7 +39,10 @@ class User_Resource
         foreach ( $config as $strKey => $confGroups ) {
             $arrResources = array();
             foreach( $confGroups as $strResourceName => $strResourceId ) {
-                $arrResources[ $strResourceId ] = $strResourceName;
+                if ( is_array( $strResourceId ))
+                    $arrResources[ $strResourceId[0] ] = $strResourceName;
+                else 
+                    $arrResources[ $strResourceId ] = $strResourceName;
             }
             $arrGroups[ $strKey ] = $arrResources;
         }

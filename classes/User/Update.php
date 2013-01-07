@@ -10,8 +10,9 @@ class User_Update extends App_Update
 
     public function update()
     {
+        $this->_install();
         if ( $this->isVersionBelow( '0.1.2' ) ) {
-            $this->_install();
+            
             $tblUsers = User_Account::Table();
             if ( !$tblUsers ->hasColumn( 'ucac_icon' ) ) {
                 $tblUsers ->addColumn(  'ucac_icon','VARCHAR(255) DEFAULT \'\' NOT NULL');
@@ -126,7 +127,7 @@ class User_Update extends App_Update
      */
     protected function _install()
     {
-        Sys_Io::out( 'Installing Users Management' );
+        //Sys_Io::out( 'Installing Users Management' );
 
         if (!$this->getDbAdapterRead()->hasTable('uc_account')) {
             Sys_Io::out( 'User Accounts created' );
@@ -149,8 +150,9 @@ class User_Update extends App_Update
                 KEY `ucac_date_added` (`ucac_date_added`),
                 KEY `ucac_status` (`ucac_status`)
                 ");
-            
-            if (!$this->getDbAdapterRead()->hasTable('uc_role')) {
+      }
+      
+      if (!$this->getDbAdapterRead()->hasTable('uc_role')) {
                 Sys_Io::out( 'User Roles created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_role', "
                 `ucr_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -158,9 +160,9 @@ class User_Update extends App_Update
                 `ucr_date_added` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
                 PRIMARY KEY (`ucr_id`)
                 ");
-            }
+      }
             
-            if (!$this->getDbAdapterRead()->hasTable('uc_user_role')) {
+      if (!$this->getDbAdapterRead()->hasTable('uc_user_role')) {
                 Sys_Io::out( 'User Account Roles created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_user_role', "
                 `ucur_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -171,9 +173,9 @@ class User_Update extends App_Update
                 KEY `ucur_user_id` (`ucur_user_id`),
                 KEY `ucur_role_id` (`ucur_role_id`)
                 ");
-            }
+      }
             
-            if (!$this->getDbAdapterRead()->hasTable('uc_access_list')) {
+      if (!$this->getDbAdapterRead()->hasTable('uc_access_list')) {
                 Sys_Io::out( 'User Access Lists created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_access_list', "
                 `ucal_id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -184,9 +186,9 @@ class User_Update extends App_Update
                 KEY `ucal_role_id` (`ucal_role_id`),
                 KEY `ucal_resource_id` (`ucal_resource_id`)
                 ");
-            }
+      }
             
-            if (!$this->getDbAdapterRead()->hasTable('uc_option')) {
+      if (!$this->getDbAdapterRead()->hasTable('uc_option')) {
                 Sys_Io::out( 'User options created' );
                 $this->getDbAdapterWrite()->addTableSql('uc_option', "
                     
@@ -199,8 +201,8 @@ class User_Update extends App_Update
                 KEY `uco_user_id` (`uco_user_id`),
                 KEY `uco_key` (`uco_key`)
                 ");
-            }
         }
+        
     }
 
 }

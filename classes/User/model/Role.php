@@ -124,8 +124,12 @@ class User_Role extends DBx_Table_Row
         $config = App_Application::getInstance()->getConfig()->user->resource; 
         foreach ( $config as $strGroup => $arrResource ) {
             $arrGroup = array();
-            foreach ( $arrResource as $strName => $nResourceId ) {
-                 if ( isset( $arrAccessList[ $nResourceId ])  ) 
+            foreach ( $arrResource as $strName => $res ) {
+                if ( is_object( $res ) ) {
+                    $nResourceId = $res->id;
+                } else $nResourceId = $res;
+                
+                if ( isset( $arrAccessList[ $nResourceId ])  ) 
                      $arrGroup[] = $strName;
             }
             if ( count( $arrGroup ) > 0 ) {

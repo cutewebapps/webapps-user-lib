@@ -158,5 +158,5 @@ class User_Auth
         }
         return 'Guest';
     }    
-    
+   
 }
