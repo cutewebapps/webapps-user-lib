@@ -26,6 +26,24 @@ class User_Role_Table extends DBx_Table
 
 class User_Role_List extends DBx_Table_Rowset
 {
+    /**
+     * @param string $strDelimiter
+     * @return string
+     */
+    public function toString( $strDelimiter  = ', ')
+    {
+        $arrNames = array();
+        foreach ( $this as $objUser ) $arrNames [] = $objUser->getName();
+        return implode( $strDelimiter, $arrNames );
+    }
+    
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->toString( ', ');
+    }
 }
 
 class User_Role_Form_Filter extends App_Form_Filter
