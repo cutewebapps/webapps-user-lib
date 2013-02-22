@@ -1,8 +1,5 @@
 <?php
 
-// TODO: view base!
-// TODO: all the cases are not thoroughly tested!
-
 class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
 {
  
@@ -48,7 +45,14 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
 // Sys_Io::out( 'CURRENT AREA: ' . $strCurrentArea . ' ' . $strArea );
             $strBaseAreaUrl = str_replace( '//','/', 
                     str_replace( '//','/',  App_Application::getInstance()->getConfig()->base . '/'.$strArea.'/'));
-
+            $strUrlExt = '';
+            $strRedirect = $strBaseAreaUrl;
+            if ( isset( $_REQUEST['returnurl'] ) && $_REQUEST['returnurl'] != ""  ) {
+                $strUrlExt = '&returnurl='.urlencode( $_REQUEST['returnurl'] );
+                $strRedirect  = $_REQUEST['returnurl'];
+            }
+            
+            
             $strSessionName = 'user_'.$strArea;
             $objSession = new App_Session_Namespace( $strSessionName );
 
@@ -92,23 +96,24 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                             
                             if ( isset($arrAreaProperties['role_forbidden']) ) {
                                 if( $objUser->hasRole( $arrAreaProperties['role_forbidden'] ) ) {
-                                    header( 'Location: '.$strBaseAreaUrl.'?errcode=3' ); die();
+                                    header( 'Location: '.$strBaseAreaUrl.'?errcode=3'.$strUrlExt ); die();
                                 }
                             }
                             if ( isset($arrAreaProperties['role_required']) ) {
                                 if( !$objUser->hasRole( $arrAreaProperties['role_required'] ) ) {
-                                    header( 'Location: '.$strBaseAreaUrl.'?errcode=3' ); die();
+                                    header( 'Location: '.$strBaseAreaUrl.'?errcode=3'.$strUrlExt ); die();
                                 }
                             }
                             // Sys_Debug::dump( $objUser->getId() );
                             $objSession->user_id = $objUser->getId();
-
+                            header( 'Location: '.$strRedirect ); die;
+                            
                         } else {
-                            header( 'Location: '.$strBaseAreaUrl.'?errcode=2' ); die();
+                            header( 'Location: '.$strBaseAreaUrl.'?errcode=2'.$strUrlExt ); die();
                         }
                         header( 'Location: '.$strBaseAreaUrl ); die();
                     } else {
-                        header( 'Location: '.$strBaseAreaUrl.'?errcode=1' ); die();
+                        header( 'Location: '.$strBaseAreaUrl.'?errcode=1'.$strUrlExt ); die();
                     }
                 }
 
