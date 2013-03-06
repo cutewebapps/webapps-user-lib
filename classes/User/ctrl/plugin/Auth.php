@@ -5,6 +5,8 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
  
     public function preDispatch()
     {
+        if ( PHP_SAPI == "cli" ) return true;
+    
         $config = App_Application::getInstance()->getConfig();
         $arrUrlParams = $this->getDispatcher()->getUrlParams();
 
@@ -30,10 +32,9 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
             if ( isset( $arrUrlParams[1] )) 
                 $strNextParam = $arrUrlParams[1];
         }
-        
+
         //if ( $strCurrentArea == 'admin' ) die;
         foreach ( $arrUserAreas as $strArea => $arrAreaProperties ) {
-
 
             if ( !isset($arrAreaProperties['theme']) )
                 throw new App_Exception ( 'Theme was not specified for user area '.$strArea );
@@ -47,9 +48,9 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     str_replace( '//','/',  App_Application::getInstance()->getConfig()->base . '/'.$strArea.'/'));
             $strUrlExt = '';
             $strRedirect = $strBaseAreaUrl;
-            if ( isset( $_REQUEST['returnurl'] ) && $_REQUEST['returnurl'] != ""  ) {
-                $strUrlExt = '&returnurl='.urlencode( $_REQUEST['returnurl'] );
-                $strRedirect  = $_REQUEST['returnurl'];
+            if ( $this->getParam( 'returnurl' ) != ""  ) {
+                $strUrlExt = '&returnurl='.urlencode( $this->getParam( 'returnurl' ) );
+                $strRedirect = $this->getParam( 'returnurl' );
             }
             
             
@@ -80,16 +81,15 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                 
             } else {
 
-                if ( isset( $_REQUEST[ 'errcode' ] ) )
-                    Sys_Global::set( 'errcode', intval( $_REQUEST[ 'errcode' ] ) );
+                if ( $this->getParam( 'errcode' ) )
+                    Sys_Global::set( 'errcode', $this->getParam( 'errcode' ) );
 
-                if ( isset( $_REQUEST['login' ] ) &&
-                     isset( $_REQUEST['password' ] ) ) {
+                if ( $this->hasParam( 'login' ) && $this->hasParam('password') ) {
 
                     $tblUser = User_Account::Table();
                     $selectUser = $tblUser->select()
-                            ->where('ucac_login = ?', $_REQUEST['login'] )
-                            ->where('ucac_password = ?', $_REQUEST['password'] );
+                            ->where('ucac_login = ?', $this->getParam( 'login' ) )
+                            ->where('ucac_password = ?', $this->getParam( 'password' ) );
                     $objUser = $tblUser->fetchRow( $selectUser );
                     if ( is_object( $objUser ) ) {
                         if ( $objUser->ucac_status == User_Account::ACTIVE) {
