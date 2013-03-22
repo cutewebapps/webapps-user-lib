@@ -119,9 +119,16 @@ class User_Role extends DBx_Table_Row
      */
     public function getAccessList()
     {
-        $select = User_AccessList::Table()->select()
-                ->where( 'ucal_role_id = ?', $this->getId() );
-        return User_AccessList::Table()->fetchAll($select);
+        $cache = new Sys_Cache_Memory();
+        $strCacheIndex = 'user-role-'.$this->getId().'can-accesslist';
+        if ( ($res = $cache->load( $strCacheIndex )) === false ) {
+            
+            $select = User_AccessList::Table()->select()
+                    ->where( 'ucal_role_id = ?', $this->getId() );
+            $res = User_AccessList::Table()->fetchAll($select);
+            $cache->save( $res, $strCacheIndex );
+        }
+        return $res;
     }
     /**
      * Getting Roles Access list as string

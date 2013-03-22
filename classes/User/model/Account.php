@@ -282,14 +282,22 @@ class User_Account extends DBx_Table_Row
      */
     public function canAccess( $resource )
     {
-        if ( preg_match( '@\d+@', $resource ) ) {
-            return $this->canAccessByResourceId( $resource );
-        }
-        $nResourceId = User_Resource::parseString( $resource ); 
-        if ( ! $nResourceId ) 
-            throw new User_Acl_Exception( "Invalid resource string: ".$resource );
+        $cache = new Sys_Cache_Memory();
+        $strCacheIndex = 'user-'.$this->getId().'can-access-'.$resource;
+        if ( ($res = $cache->load( $strCacheIndex )) === false ) {
         
-        return $this->canAccessByResourceId( $nResourceId );
+            if ( preg_match( '@\d+@', $resource ) ) {
+                $res = $this->canAccessByResourceId( $resource );
+            } else {
+                $nResourceId = User_Resource::parseString( $resource ); 
+                if ( ! $nResourceId ) 
+                    throw new User_Acl_Exception( "Invalid resource string: ".$resource );
+
+                $res = $this->canAccessByResourceId( $nResourceId );
+            }
+            $cache->save( $res, $strCacheIndex );
+        }
+        return $res;
     }
     /**
      * @param integer $nResourceId
