@@ -109,7 +109,7 @@ class User_Role extends DBx_Table_Row
      */
     public function _insert()
     {
-        if ( !isset( $this->ucr_date_added ) )
+        if ( !$this->ucr_date_added )
             $this->ucr_date_added = date('Y-m-d H:i:s');
     }
     
