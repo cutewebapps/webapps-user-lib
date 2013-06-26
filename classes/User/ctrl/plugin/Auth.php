@@ -71,6 +71,8 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     Sys_Global::set( 'USER_OBJECT', $objUser );
                     // Sys_Global::set( 'USER_ROLES',  $objUser->getRoles() );
                     // Sys_Debug::dumpDie( $objUser->getRoles() );
+		} else {
+                    $strNextParam = 'sign-out';
                 }
 
                 if ( $strNextParam == 'sign-out' ) {
