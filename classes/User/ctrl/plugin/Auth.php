@@ -66,7 +66,7 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                 $selectUser = $tblUser->select()
                     ->where('ucac_id = ?',  $objSession->user_id );
                 $objUser = $tblUser->fetchRow( $selectUser );
-                if ( is_object( $objUser )) {
+                if ( is_object( $objUser )  && $objUser->isActive()  ) {
                     Sys_Global::set( 'USER_LOGIN', $objUser->ucac_login );
                     Sys_Global::set( 'USER_OBJECT', $objUser );
                     // Sys_Global::set( 'USER_ROLES',  $objUser->getRoles() );
