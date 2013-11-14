@@ -54,7 +54,7 @@ class User_Account_Form_Filter extends App_Form_Filter
     {
         $this->allowFiltering( array( 'ucac_login', 'ucac_comment',
             'ucac_status', 'ucac_first', 'ucac_last', 'ucac_email', 'ucac_phone',
-            'role' ));
+            'role', 'noroles' ));
     }
 }
 

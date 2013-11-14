@@ -4,6 +4,10 @@ class User_AccountCtrl extends App_DbTableCtrl
 {
     protected function  _filterField($strFieldName, $strFieldValue) {
         switch ( $strFieldName ) {
+            case 'noroles':
+                $this->_select->where( 'ucac_id NOT IN 
+                       (SELECT ucur_user_id FROM '.User_UserRole::TableName().')', $strFieldValue );
+		break;
             case 'role':
                 $this->_select->where( 'ucac_id IN 
                        (SELECT ucur_user_id FROM '.User_UserRole::TableName().'
