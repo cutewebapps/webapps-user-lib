@@ -312,4 +312,20 @@ class User_Account extends DBx_Table_Row
         $arrAccessList = $this->getAccessList();
         return isset( $arrAccessList[ $nResourceId ] );
     }
+
+    /**
+     * @return string
+     */
+    public function getOption( $strKey, $default = '' )
+    {
+	$lstOptions = User_Option::Table()->findByUserId( $this->getId() );
+	$arrOptions = $lstOptions->getAsArray( 'uco_value' , 'uco_key' );
+	return isset( $arrOptions[ $strKey ] ) ? $arrOptions[ $strKey ] : $default;
+    }
+
+    public function setOption( $strKey, $sValue )
+    {
+	return User_Option::Table()->setValue( $this->getId(), $strKey, $sValue );
+    }
+
 }

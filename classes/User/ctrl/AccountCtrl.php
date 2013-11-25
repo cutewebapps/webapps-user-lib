@@ -2,6 +2,11 @@
 
 class User_AccountCtrl extends App_DbTableCtrl
 {
+    public function getClassName()
+    {
+        return 'User_Account';
+    }
+
     protected function  _filterField($strFieldName, $strFieldValue) {
         switch ( $strFieldName ) {
             case 'noroles':
