@@ -43,7 +43,7 @@ class User_AccountCtrl extends App_DbTableCtrl
                 }
                 $objUser = User_Account::Table()->fetchRow( $select );
                 if ( is_object( $objUser ) ) {
-                    $arrErrors[] = 'User with such login already exists'; 
+                    $arrErrors['ucac_login'] = 'User with such login already exists';
                 }
             }
             if ( count( $arrErrors ) > 0 ) {
