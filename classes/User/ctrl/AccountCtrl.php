@@ -32,26 +32,26 @@ class User_AccountCtrl extends App_DbTableCtrl
 
     public function editAction()
     {
-        if ( $this->_isPost() && ! $this->_getParam( 'ucac_id' ) ) {
+        if ( $this->_isPost() ) {
             $arrErrors = array();
-            
             // if we are adding a new record, prevent adding with the same login
             $strNewLogin = $this->_getParam( 'ucac_login' );
             if ( $strNewLogin != "" ) {
-                $objUser = User_Account::Table()->findByLogin( $strNewLogin );
+                $select = User_Account::Table()->select()->where( 'ucac_login = ?', $strNewLogin ); 
+                if ( $this->_hasParam( 'ucac_id' ) ) {
+                    $select->where( 'ucac_id != ? ', $this->_getParam( 'ucac_id' ) );
+                }
+                $objUser = User_Account::Table()->fetchRow( $select );
                 if ( is_object( $objUser ) ) {
                     $arrErrors[] = 'User with such login already exists'; 
                 }
             }
-            
             if ( count( $arrErrors ) > 0 ) {
                 $this->view->lstErrors = $arrErrors;
                 $this->view->object = User_Account::Table()->createRow();
                 return;
             }
-            
-        }
-        //add role if it is provided
+        }        //add role if it is provided
         parent::editAction();
         
         $objUser = $this->view->object;
