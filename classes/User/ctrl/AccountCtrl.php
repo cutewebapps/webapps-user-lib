@@ -23,6 +23,16 @@ class User_AccountCtrl extends App_DbTableCtrl
                 parent::_filterField($strFieldName, $strFieldValue);
         }
     }
+    
+    protected function _filterList()
+    {
+        parent::_filterList();
+        if ( ! $this->getParam('sort') ) {
+            $this->_select
+                    ->order( 'ucac_status' )
+                    ->order( 'ucac_login' );
+        }
+    }
 
     public function getlistAction()
     {
