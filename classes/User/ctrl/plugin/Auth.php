@@ -146,8 +146,9 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     die;
                 }
 
-		if ( $objSession ) {App_Session::writeClose();  $objSession = null; } 
             } 
+            if ( $objSession ) {App_Session::writeClose();  $objSession = null; } 
+
             // end of pre-dispatch
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         }
