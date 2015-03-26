@@ -46,6 +46,10 @@ class User_Account_Form_Edit extends App_Form_Edit
         $this->allowEditing( array( 'ucac_login', 'ucac_password', 'ucac_comment',
                 'ucac_status', 'ucac_first', 'ucac_last', 'ucac_email', 'ucac_phone' ));
     }
+    public function getObjectName()
+    {
+        return 'User Account';
+    }
 }
 
 class User_Account_Form_Filter extends App_Form_Filter

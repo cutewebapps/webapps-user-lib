@@ -119,6 +119,9 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     }
                 }
 
+		// releasing session - before rendering auth templates - for concurency race
+		App_Session::writeClose(); $objSession = null;
+        
                 if ( isset( $arrAreaProperties['require_login'] ) && $arrAreaProperties['require_login']  ==  1 ) {
 
                     $strViewClass = $config->default_renderer;
@@ -143,7 +146,7 @@ class User_Auth_CtrlPlugin extends App_Dispatcher_CtrlPlugin
                     die;
                 }
 
-
+		if ( $objSession ) {App_Session::writeClose();  $objSession = null; } 
             } 
             // end of pre-dispatch
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
